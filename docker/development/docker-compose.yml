@@ -1,0 +1,21 @@
+services:
+  qdrant:
+    build:
+      context: ./qdrant/
+      dockerfile: Dockerfile
+    # image: qdrant
+    container_name: qdrant
+    ports:
+      - "6333:6333"
+    volumes:
+      - ./qdrant:/qdrant
+    command: ["qdrant", "start", "--config", "/qdrant/config.yml"]
+    environment:
+      - RUST_LOG=info
+      - RUST_BACKTRACE=1
+    # networks:
+    #   - qdrant
+    # depends_on:
+    #   - qdrant-api
+    #   - qdrant-indexer
+    #   - qdrant-search

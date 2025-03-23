@@ -1,0 +1,4 @@
+sentence-transformers==3.4.1
+qdrant-client==1.13.3
+flask
+vllm

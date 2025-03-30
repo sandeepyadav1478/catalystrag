@@ -176,5 +176,6 @@ cython_debug/
 
 docker/development/ollama/
 docker/development/ollama-models/
+docker/development/open-webui-local/
 docker/development/qdrant_data/
 opt/

@@ -80,38 +80,57 @@ services:
   #   restart: always # Restart the container if it crashes
 
 
-  # ollama:
-  #   # build:
-  #   #   context: ./ollama/
-  #   #   dockerfile: Dockerfile
-  #   image: ollama/ollama:0.5.12
-  #   container_name: ollama
-  #   runtime: nvidia
-  #   deploy: # Optional: For resource management in a Swarm or Kubernetes environment
-  #     resources:
-  #       reservations:
-  #           devices:
-  #             - driver: nvidia
-  #               count: all
-  #               capabilities: [gpu]
-  #       # limits:
-  #         # gpus: all # Request all available GPUs
-  #       # reservations: # Optional: Request a guaranteed amount of GPU memory
-  #         # gpus: all # Example: Request 1 GPU, you might need to adjust this depending on your needs.
-  #   ports:
-  #     - "11434:11434"
-  #   entrypoint: ["/bin/sh","-c"]
-  #   command: ["ollama serve"]
-  #   volumes:
-  #     - ./ollama-models:/root/.ollama/models
-  #   tty: true
-  #   healthcheck:
-  #     test: ["CMD-SHELL", "curl -f localhost:11434 | grep 'Ollama is running'"]
-  #     interval: 30s
-  #     timeout: 10s
-  #     retries: 2
-  #     start_period: 60s
-  #   # restart: always # Restart the container if it crashes
+  ollama:
+    # build:
+    #   context: ./ollama/
+    #   dockerfile: Dockerfile
+    image: ollama/ollama:0.6.2
+    container_name: ollama
+    runtime: nvidia
+    deploy: # Optional: For resource management in a Swarm or Kubernetes environment
+      resources:
+        reservations:
+            devices:
+              - driver: nvidia
+                count: all
+                capabilities: [gpu]
+        # limits:
+          # gpus: all # Request all available GPUs
+        # reservations: # Optional: Request a guaranteed amount of GPU memory
+          # gpus: all # Example: Request 1 GPU, you might need to adjust this depending on your needs.
+    ports:
+      - "11434:11434"
+    entrypoint: ["/bin/sh","-c"]
+    command: ["ollama serve"]
+    volumes:
+      - ./ollama-models:/root/.ollama/models
+    tty: true
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f localhost:11434 | grep 'Ollama is running'"]
+      interval: 30s
+      timeout: 10s
+      retries: 2
+      start_period: 60s
+    # restart: always # Restart the container if it crashes
+
+
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    volumes:
+      - ./open-webui-local:/app/backend/data
+    depends_on:
+      - ollama
+    ports:
+      - 3000:8080
+    environment:
+      - 'OLLAMA_BASE_URL=http://ollama:11434'
+      - 'WEBUI_SECRET_KEY='
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    # restart: unless-stopped
+
+
 
   # deepseek14b-ollama:
   #   image: ollama/ollama:0.5.12-rocm
